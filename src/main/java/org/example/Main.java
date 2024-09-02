@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String FILE_PATH = "D:\\yzh/Default.xlsx";
+    private static final String FILE_PATH = "D:\\yzh/IPDTeamTemplate.xlsx";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
@@ -36,8 +36,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Process roles to set parent codes
+        System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code)\nVALUES");
         for (int i = 0; i < roles.size(); i++) {
             Role currentRole = roles.get(i);
             if (currentRole.getLevel() > 0) {
@@ -50,6 +49,7 @@ public class Main {
 
 
         generateSQLValues(roles);
+        System.out.println(";");
     }
 
     private static Role findParentRole(List<Role> roles, int currentIndex) {
@@ -64,7 +64,7 @@ public class Main {
 
     private static void generateSQLValues(List<Role> roles) {
         StringBuilder sqlBuilder = new StringBuilder();
-        String template = "('quick_enum_product_role_default', '%s', '%s', '%s'),\n";
+        String template = "('quick_enum_product_role_pc', '%s', '%s', '%s'),\n";
 
         for (Role role : roles) {
             sqlBuilder.append(String.format(template, role.getTitle(), role.getCode(), role.getParentCode()));
