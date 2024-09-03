@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String FILE_PATH = "D:\\yzh/IPDTeamTemplate.xlsx";
+    private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
+    private static final String SHEET_NAME = "PC Default";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
@@ -17,11 +18,10 @@ public class Main {
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              Workbook workbook = new XSSFWorkbook(fis)) {
 
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = getSheetByNameOrIndex(workbook, SHEET_NAME);
 
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) {
-
                     continue;
                 }
 
@@ -47,9 +47,13 @@ public class Main {
             }
         }
 
-
         generateSQLValues(roles);
         System.out.println(";");
+    }
+
+    private static Sheet getSheetByNameOrIndex(Workbook workbook, String sheetName) {
+        Sheet sheet = workbook.getSheet(sheetName);
+        return sheet;
     }
 
     private static Role findParentRole(List<Role> roles, int currentIndex) {
@@ -70,7 +74,6 @@ public class Main {
             sqlBuilder.append(String.format(template, role.getTitle(), role.getCode(), role.getParentCode()));
         }
 
-
         if (sqlBuilder.length() > 0) {
             sqlBuilder.setLength(sqlBuilder.length() - 2);
         }
@@ -78,4 +81,3 @@ public class Main {
         System.out.println(sqlBuilder.toString());
     }
 }
-
