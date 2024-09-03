@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
-    private static final String SHEET_NAME = "Sheet1";
+    private static final String SHEET_NAME = "PC Default";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
@@ -28,6 +28,10 @@ public class Main {
                 int level = (int) row.getCell(0).getNumericCellValue();
                 String code = row.getCell(1).getStringCellValue();
                 String title = row.getCell(2).getStringCellValue();
+
+                if (code.isEmpty() || title.isEmpty()) {
+                    continue;
+                }
 
                 Role role = new Role(level, code, title);
                 roles.add(role);
