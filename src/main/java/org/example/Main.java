@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
-    private static final String SHEET_NAME = "PC Default";
+    private static final String SHEET_NAME = "Sheet1";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
@@ -36,17 +36,8 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code)\nVALUES");
-        for (int i = 0; i < roles.size(); i++) {
-            Role currentRole = roles.get(i);
-            if (currentRole.getLevel() > 0) {
-                Role parentRole = findParentRole(roles, i);
-                if (parentRole != null) {
-                    currentRole.setParentCode(parentRole.getCode());
-                }
-            }
-        }
 
+        System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code)\nVALUES");
         generateSQLValues(roles);
         System.out.println(";");
     }
@@ -71,6 +62,13 @@ public class Main {
         String template = "('quick_enum_product_role_pc', '%s', '%s', '%s'),\n";
 
         for (Role role : roles) {
+            if (role.getLevel() > 0) {
+                Role parentRole = findParentRole(roles, roles.indexOf(role));
+                if (parentRole != null) {
+                    role.setParentCode(parentRole.getCode());
+                }
+            }
+
             sqlBuilder.append(String.format(template, role.getTitle(), role.getCode(), role.getParentCode()));
         }
 
