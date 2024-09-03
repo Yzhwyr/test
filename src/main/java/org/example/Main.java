@@ -34,11 +34,9 @@ public class Main {
                     continue;
                 }
 
-                // 检查 code 是否已经存在
                 if (!uniqueCodes.add(code)) {
-                    // 如果 code 已经存在，则记录行号
                     codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
-                    continue; // 跳过重复的 code
+                    continue;
                 }
 
                 Role role = new Role(level, code, title);
