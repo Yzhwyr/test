@@ -5,8 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
@@ -14,6 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
+        Map<String, List<Integer>> codeToRows = new HashMap<>();
+        Set<String> uniqueCodes = new HashSet<>();
 
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              Workbook workbook = new XSSFWorkbook(fis)) {
@@ -33,8 +34,24 @@ public class Main {
                     continue;
                 }
 
+                // 检查 code 是否已经存在
+                if (!uniqueCodes.add(code)) {
+                    // 如果 code 已经存在，则记录行号
+                    codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
+                    continue; // 跳过重复的 code
+                }
+
                 Role role = new Role(level, code, title);
                 roles.add(role);
+
+                codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
+            }
+
+            for (Map.Entry<String, List<Integer>> entry : codeToRows.entrySet()) {
+                List<Integer> rows = entry.getValue();
+                if (rows.size() > 1) {
+                    System.out.println("重复的 code: " + entry.getKey() + " 出现在行号: " + rows);
+                }
             }
 
         } catch (IOException e) {
