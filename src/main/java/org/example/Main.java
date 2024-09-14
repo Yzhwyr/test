@@ -9,12 +9,13 @@ import java.util.*;
 
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
-    private static final String SHEET_NAME = "PC Default";
+    private static final String SHEET_NAME = "Default";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
         Map<String, List<Integer>> codeToRows = new HashMap<>();
         Set<String> uniqueCodes = new HashSet<>();
+        int rowCount = 0; // 新增行计数器
 
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              Workbook workbook = new XSSFWorkbook(fis)) {
@@ -34,6 +35,8 @@ public class Main {
                     continue;
                 }
 
+                rowCount++; // 计数器递增
+
                 if (!uniqueCodes.add(code)) {
                     codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
                     continue;
@@ -51,6 +54,7 @@ public class Main {
                     System.out.println("重复的 code: " + entry.getKey() + " 出现在行号: " + rows);
                 }
             }
+            System.out.println("共处理了 " + rowCount + " 条记录");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +82,7 @@ public class Main {
 
     private static void generateSQLValues(List<Role> roles) {
         StringBuilder sqlBuilder = new StringBuilder();
-        String template = "('quick_enum_product_role_pc', '%s', '%s', '%s'),\n";
+        String template = "('quick_enum_product_role_ae_odm', '%s', '%s', '%s'),\n";
 
         for (Role role : roles) {
             if (role.getLevel() > 0) {
