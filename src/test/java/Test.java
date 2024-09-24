@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+
+/**
+ * @description: xlsx全量（dict_key, title, code）
+ */
 public class Test {
 
     public static void main(String[] args) {
@@ -25,11 +29,11 @@ public class Test {
             boolean isFirstEntry = true;
 
             for (Sheet sheet : workbook) {
-                boolean isFirstRow = true; // 添加标志变量
+                boolean isFirstRow = true;
 
                 for (Row row : sheet) {
                     if (isFirstRow) {
-                        isFirstRow = false; // 跳过第一行
+                        isFirstRow = false;
                         continue;
                     }
 

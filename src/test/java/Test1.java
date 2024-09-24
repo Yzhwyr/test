@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
+/**
+ *description: txt全量并排序（dict_key, code, title, sort_order）
+ */
 public class Test1 {
     public static void main(String[] args) {
         String filePath = "D:\\yzh\\新建文本文档.txt";
