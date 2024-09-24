@@ -49,14 +49,15 @@ public class Test1 {
                     String innerName = jsonObject.getString("innerName");
                     String displayName = jsonObject.getString("displayName");
 
-                    valuesBuilder.append("(\'quick_enum_product_version_requirements\', \'").append(innerName).append("\', \'").append(displayName).append("\')");
+                    int sortOrder = i + 1;
+                    valuesBuilder.append("(\'quick_enum_product_version_requirements\', \'").append(innerName).append("\', \'").append(displayName).append("\', \'").append(sortOrder).append("\')");
 
                     if (i < jsonArray.length() - 1) {
                         valuesBuilder.append(",\n");
                     }
                 }
 
-                String sql = "INSERT INTO quick_enum_dict(dict_key, code, title)\nVALUES\n" + valuesBuilder.toString() + ";";
+                String sql = "INSERT INTO quick_enum_dict(dict_key, code, title, sort_order)\nVALUES\n" + valuesBuilder.toString() + ";";
 
                 System.out.println(sql);
             } catch (org.json.JSONException e) {

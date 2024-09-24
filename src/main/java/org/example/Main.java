@@ -9,13 +9,13 @@ import java.util.*;
 
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
-    private static final String SHEET_NAME = "Default";
+    private static final String SHEET_NAME = "Main Default";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
         Map<String, List<Integer>> codeToRows = new HashMap<>();
         Set<String> uniqueCodes = new HashSet<>();
-        int rowCount = 0; // 新增行计数器
+        int rowCount = 0;
 
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              Workbook workbook = new XSSFWorkbook(fis)) {
@@ -43,6 +43,7 @@ public class Main {
                 }
 
                 Role role = new Role(level, code, title);
+                role.setRowNumber(String.valueOf(row.getRowNum() + 1));
                 roles.add(role);
 
                 codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
@@ -62,7 +63,24 @@ public class Main {
 
         System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code)\nVALUES");
         generateSQLValues(roles);
-        System.out.println(";");
+
+        System.out.println("——————————————————————————————————————————————————————————————————————————————————————————");
+        StringBuilder updateSql = new StringBuilder();
+        int sortOrder = 1;
+        for (Role role : roles) {
+            if (role.getLevel() == 1) {
+                updateSql.append(String.format("UPDATE quick_enum_dict SET sort_order = %d WHERE CODE = '%s' AND dict_key = 'quick_enum_product_role_ae_pr';\n",
+                        sortOrder++, role.getCode()));
+            }
+        }
+
+        if (updateSql.length() > 0) {
+            updateSql.insert(0, "BEGIN;\n");
+            updateSql.append("COMMIT;\n");
+        }
+
+        System.out.println(updateSql.toString());
+
     }
 
     private static Sheet getSheetByNameOrIndex(Workbook workbook, String sheetName) {
@@ -82,7 +100,7 @@ public class Main {
 
     private static void generateSQLValues(List<Role> roles) {
         StringBuilder sqlBuilder = new StringBuilder();
-        String template = "('quick_enum_product_role_ae_odm', '%s', '%s', '%s'),\n";
+        String template = "('quick_enum_product_role_ae', '%s', '%s', '%s'),\n";
 
         for (Role role : roles) {
             if (role.getLevel() > 0) {
@@ -99,6 +117,6 @@ public class Main {
             sqlBuilder.setLength(sqlBuilder.length() - 2);
         }
 
-        System.out.println(sqlBuilder.toString());
+        System.out.println(sqlBuilder.toString() + ";");
     }
 }

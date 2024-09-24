@@ -5,6 +5,7 @@ public class Role {
     private String code;
     private String title;
     private String parentCode;
+    private String rowNumber;
 
     public Role(int level, String code, String title) {
         this.level = level;
@@ -31,5 +32,13 @@ public class Role {
 
     public void setParentCode(String parentCode) {
         this.parentCode = parentCode;
+    }
+
+    public String getRowNumber() {
+        return rowNumber;
+    }
+
+    public void setRowNumber(String rowNumber) {
+        this.rowNumber = rowNumber;
     }
 }
