@@ -8,17 +8,18 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * @description: 树状xlsx（dict_key, title, CODE, parent_code），二级父类排序（sort_code）
+ * @description: xlsx树状并排序（dict_key, title, CODE, parent_code, sort_code）
  */
 public class Main {
     private static final String FILE_PATH = "D:\\yzh\\IPDTeamTemplate.xlsx";
-    private static final String SHEET_NAME = "Main Default";
+    private static final String SHEET_NAME = "Default";
 
     public static void main(String[] args) {
         List<Role> roles = new ArrayList<>();
         Map<String, List<Integer>> codeToRows = new HashMap<>();
         Set<String> uniqueCodes = new HashSet<>();
         int rowCount = 0;
+        int sortOrder = 1;
 
         try (FileInputStream fis = new FileInputStream(FILE_PATH);
              Workbook workbook = new XSSFWorkbook(fis)) {
@@ -38,7 +39,7 @@ public class Main {
                     continue;
                 }
 
-                rowCount++; // 计数器递增
+                rowCount++;
 
                 if (!uniqueCodes.add(code)) {
                     codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
@@ -46,7 +47,7 @@ public class Main {
                 }
 
                 Role role = new Role(level, code, title);
-                role.setRowNumber(String.valueOf(row.getRowNum() + 1));
+                role.setSortOrder(sortOrder++);
                 roles.add(role);
 
                 codeToRows.computeIfAbsent(code, k -> new ArrayList<>()).add(row.getRowNum() + 1);
@@ -64,26 +65,8 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code)\nVALUES");
+        System.out.println("INSERT INTO quick_enum_dict(dict_key, title, CODE, parent_code, sort_order)\nVALUES");
         generateSQLValues(roles);
-
-        System.out.println("——————————————————————————————————————————————————————————————————————————————————————————");
-        StringBuilder updateSql = new StringBuilder();
-        int sortOrder = 1;
-        for (Role role : roles) {
-            if (role.getLevel() == 1) {
-                updateSql.append(String.format("UPDATE quick_enum_dict SET sort_order = %d WHERE CODE = '%s' AND dict_key = 'quick_enum_product_role_ae_pr';\n",
-                        sortOrder++, role.getCode()));
-            }
-        }
-
-        if (updateSql.length() > 0) {
-            updateSql.insert(0, "BEGIN;\n");
-            updateSql.append("COMMIT;\n");
-        }
-
-        System.out.println(updateSql.toString());
-
     }
 
     private static Sheet getSheetByNameOrIndex(Workbook workbook, String sheetName) {
@@ -103,7 +86,7 @@ public class Main {
 
     private static void generateSQLValues(List<Role> roles) {
         StringBuilder sqlBuilder = new StringBuilder();
-        String template = "('quick_enum_product_role_ae', '%s', '%s', '%s'),\n";
+        String template = "('quick_enum_product_role_ae_odm', '%s', '%s', '%s', %d),\n";
 
         for (Role role : roles) {
             if (role.getLevel() > 0) {
@@ -113,7 +96,7 @@ public class Main {
                 }
             }
 
-            sqlBuilder.append(String.format(template, role.getTitle(), role.getCode(), role.getParentCode()));
+            sqlBuilder.append(String.format(template, role.getTitle(), role.getCode(), role.getParentCode(), role.getSortOrder()));
         }
 
         if (sqlBuilder.length() > 0) {

@@ -5,7 +5,7 @@ public class Role {
     private String code;
     private String title;
     private String parentCode;
-    private String rowNumber;
+    private int sortOrder;
 
     public Role(int level, String code, String title) {
         this.level = level;
@@ -34,11 +34,11 @@ public class Role {
         this.parentCode = parentCode;
     }
 
-    public String getRowNumber() {
-        return rowNumber;
+    public int getSortOrder() {
+        return sortOrder;
     }
 
-    public void setRowNumber(String rowNumber) {
-        this.rowNumber = rowNumber;
+    public void setSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }
